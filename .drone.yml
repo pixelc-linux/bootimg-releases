@@ -1,0 +1,24 @@
+workspace:
+  base: /
+  path: /img
+pipeline:
+  build:
+    image: dvitali/pixelc-build-container:3
+    commands:
+      - git clone --depth 1 https://github.com/pixelc-linux/pixelc-kernel-scripts scripts
+      - export KVER=$(cat KERNEL)
+      - export RDVER=$(cat RAMDISK)
+      - wget "https://github.com/pixelc-linux/zImage-releases/releases/download/$KVER/Image.fit" -O Image.fit
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data.cpio.lz4" -O initramfs_data.cpio.lz4
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data_distro.cpio.lz4" -O initramfs_data_distro.cpio.lz4
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_system.cpio.lz4" -O initramfs_system.cpio.lz4
+      - cd scripts
+      - ./make_image.sh -o output/boot-$KVER-data.img ../Image.fit ../initramfs_data.cpio.lz4
+      - ./make_image.sh -o output/boot-$KVER-data-distro.img ../Image.fit ../initramfs_data_distro.cpio.lz4
+      - ./make_image.sh -o output/boot-$KVER-system.img ../Image.fit ../initramfs_system.cpio.lz4
+  github_release:
+    image: plugins/github-release
+    secrets: [ github_token ]
+    files: /img/scripts/output/*.img
+    when:
+      event: tag
