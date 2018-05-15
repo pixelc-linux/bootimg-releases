@@ -1,6 +1,6 @@
 workspace:
-  base: /
-  path: /img
+  base: /img
+  path: /i
 pipeline:
   build:
     image: dvitali/pixelc-build-container:3
@@ -13,12 +13,16 @@ pipeline:
       - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data_distro.cpio.lz4" -O initramfs_data_distro.cpio.lz4
       - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_system.cpio.lz4" -O initramfs_system.cpio.lz4
       - cd scripts
-      - ./make_image.sh -o output/boot-$KVER-data.img ../Image.fit ../initramfs_data.cpio.lz4
-      - ./make_image.sh -o output/boot-$KVER-data-distro.img ../Image.fit ../initramfs_data_distro.cpio.lz4
-      - ./make_image.sh -o output/boot-$KVER-system.img ../Image.fit ../initramfs_system.cpio.lz4
+      - mkdir output
+      - ./make_image.sh ../Image.fit ../initramfs_data.cpio.lz4 output/boot-$KVER-data.img.unsigned
+      - ./make_image.sh ../Image.fit ../initramfs_data_distro.cpio.lz4 output/boot-$KVER-data_distro.img.unsigned
+      - ./make_image.sh ../Image.fit ../initramfs_system.cpio.lz4 output/boot-$KVER-system.img.unsigned
+      - ./sign_image.sh output/boot-$KVER-data.img.unsigned output/boot-$KVER-data.img
+      - ./sign_image.sh output/boot-$KVER-data_distro.img.unsigned output/boot-$KVER-data_distro.img
+      - ./sign_image.sh output/boot-$KVER-system.img.unsigned output/boot-$KVER-system.img
   github_release:
     image: plugins/github-release
     secrets: [ github_token ]
-    files: /img/scripts/output/*.img
+    files: [ /img/i/scripts/output/*.unsigned, /img/i/scripts/output/*.img]
     when:
       event: tag
