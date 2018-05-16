@@ -1,3 +1,4 @@
 *.lz4
 Image.fit
 scripts/
+*.cpio.gz
