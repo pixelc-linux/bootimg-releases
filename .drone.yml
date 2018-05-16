@@ -3,20 +3,20 @@ workspace:
   path: /i
 pipeline:
   build:
-    image: dvitali/pixelc-build-container:3
+    image: dvitali/pixelc-build-container:5
     commands:
       - git clone --depth 1 https://github.com/pixelc-linux/pixelc-kernel-scripts scripts
       - export KVER=$(cat KERNEL)
       - export RDVER=$(cat RAMDISK)
       - wget "https://github.com/pixelc-linux/zImage-releases/releases/download/$KVER/Image.fit" -O Image.fit
-      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data.cpio.lz4" -O initramfs_data.cpio.lz4
-      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data_distro.cpio.lz4" -O initramfs_data_distro.cpio.lz4
-      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_system.cpio.lz4" -O initramfs_system.cpio.lz4
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data.cpio.gz" -O initramfs_data.cpio.gz
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data_distro.cpio.gz" -O initramfs_data_distro.cpio.gz
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_system.cpio.gz" -O initramfs_system.cpio.gz
       - cd scripts
       - mkdir output
-      - ./make_image.sh ../Image.fit ../initramfs_data.cpio.lz4 output/boot-$KVER-data.img.unsigned
-      - ./make_image.sh ../Image.fit ../initramfs_data_distro.cpio.lz4 output/boot-$KVER-data_distro.img.unsigned
-      - ./make_image.sh ../Image.fit ../initramfs_system.cpio.lz4 output/boot-$KVER-system.img.unsigned
+      - ./make_image.sh ../Image.fit ../initramfs_data.cpio.gz output/boot-$KVER-data.img.unsigned
+      - ./make_image.sh ../Image.fit ../initramfs_data_distro.cpio.gz output/boot-$KVER-data_distro.img.unsigned
+      - ./make_image.sh ../Image.fit ../initramfs_system.cpio.gz output/boot-$KVER-system.img.unsigned
       - ./sign_image.sh output/boot-$KVER-data.img.unsigned output/boot-$KVER-data.img
       - ./sign_image.sh output/boot-$KVER-data_distro.img.unsigned output/boot-$KVER-data_distro.img
       - ./sign_image.sh output/boot-$KVER-system.img.unsigned output/boot-$KVER-system.img
