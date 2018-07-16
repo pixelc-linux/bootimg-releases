@@ -9,9 +9,8 @@ pipeline:
       - export KVER=$(cat KERNEL)
       - export RDVER=$(cat RAMDISK)
       - wget "https://github.com/pixelc-linux/zImage-releases/releases/download/$KVER/Image.fit" -O Image.fit
-      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data.cpio.gz" -O initramfs_data.cpio.gz
-      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data_distro.cpio.gz" -O initramfs_data_distro.cpio.gz
-      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_system.cpio.gz" -O initramfs_system.cpio.gz
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_data-mmcblk1p7.cpio.gz" -O initramfs_data.cpio.gz
+      - wget "https://github.com/pixelc-linux/initramfs-releases/releases/download/$RDVER/initramfs_system-mmcblk1p4.cpio.gz" -O initramfs_system.cpio.gz
       - cd scripts
       - mkdir output
       - ./make_image.sh ../Image.fit ../initramfs_data.cpio.gz output/boot-$KVER-data.img.unsigned
